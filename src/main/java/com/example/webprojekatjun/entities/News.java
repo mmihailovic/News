@@ -19,16 +19,16 @@ public class News {
 
     @NotNull(message = "Author is required")
     @NotEmpty(message = "Author is required")
-    private User author;
+    private String author;
 
     @NotNull(message = "Category is required")
     @NotEmpty(message = "Category is required")
-    private Category category;
+    private String category;
 
     public News() {
     }
 
-    public News(String title, String text, long date, int brojPoseta, User author, Category category) {
+    public News(String title, String text, long date, int brojPoseta, String author, String category) {
         this.title = title;
         this.date = date;
         this.author = author;
@@ -37,7 +37,7 @@ public class News {
         this.brojPoseta = brojPoseta;
     }
 
-    public News(Integer id, String title, String text, long date, int brojPoseta, User author, Category category) {
+    public News(Integer id, String title, String text, long date, int brojPoseta, String author, String category) {
         this.id = id;
         this.title = title;
         this.date = date;
@@ -87,19 +87,19 @@ public class News {
         this.brojPoseta = brojPoseta;
     }
 
-    public User getAuthor() {
+    public String getAuthor() {
         return author;
     }
 
-    public void setAuthor(User author) {
+    public void setAuthor(String author) {
         this.author = author;
     }
 
-    public Category getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 }
