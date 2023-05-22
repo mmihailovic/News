@@ -28,7 +28,7 @@ abstract public class MySqlAbstractRepository {
     }
 
     protected String getDatabaseName() {
-        return "web_sesti_domaci";
+        return "news";
     }
 
     protected String getUsername() {

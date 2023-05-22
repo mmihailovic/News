@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Path("/tag")
 public class TagResource {
@@ -21,10 +22,18 @@ public class TagResource {
     }
 
     @GET
-    @Path("/{kljucna_rec}")
+    @Path("/page/{page}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response findTag(@PathParam("kljucna_rec") String kljucna_rec) {
-        return Response.ok(tagService.findTag(kljucna_rec)).build();
+    public Response allWithPagination(@PathParam("page") Integer page) {
+        List<Tag> tags = tagService.allTags();
+        return Response.ok(tags.subList((page-1)*3,Math.min(tags.size(), page*3))).build();
+    }
+
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findTag(@PathParam("id") Integer id) {
+        return Response.ok(tagService.findTag(id)).build();
     }
 
     @POST
@@ -33,9 +42,24 @@ public class TagResource {
         return Response.ok(tagService.addTag(tag)).build();
     }
 
+    @GET
+    @Path("/news/{vest_id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response allTagsForNews(@PathParam("vest_id") Integer vest_id) {
+        return Response.ok(tagService.allTagsForNews(vest_id)).build();
+    }
+
+    @GET
+    @Path("/news/{vest_id}/page/{page}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response allTagsForNewsWithPagination(@PathParam("page") Integer page, @PathParam("vest_id") Integer vest_id) {
+        List<Tag> tags = tagService.allTagsForNews(vest_id);
+        return Response.ok(tags.subList((page-1)*3,Math.min(tags.size(), page*3))).build();
+    }
+
     @DELETE
-    @Path("/{kljucna_rec}")
-    public void delete(@PathParam("kljucna_rec") String kljucna_rec) {
-        tagService.deleteTag(kljucna_rec);
+    @Path("/{id}")
+    public void delete(@PathParam("id") Integer id) {
+        tagService.deleteTag(id);
     }
 }

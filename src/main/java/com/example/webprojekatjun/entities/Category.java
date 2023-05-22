@@ -11,6 +11,9 @@ public class Category {
     @NotEmpty(message = "Polje za opis mora biti popunjeno")
     private String opis;
 
+    public Category() {
+    }
+
     public Category(String ime, String opis) {
         this.ime = ime;
         this.opis = opis;

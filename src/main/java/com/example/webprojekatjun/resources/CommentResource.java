@@ -8,6 +8,9 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 @Path("/comments")
 public class CommentResource {
@@ -17,7 +20,18 @@ public class CommentResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response all() {
-        return Response.ok(commentService.allComments()).build();
+        List<Comment> comments = commentService.allComments();
+        Collections.sort(comments, Comparator.comparing(Comment::getDate).reversed());
+        return Response.ok(comments).build();
+    }
+
+    @GET
+    @Path("/page/{page}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response allWithPagination(@PathParam("page") Integer page) {
+        List<Comment> comments = commentService.allComments();
+        Collections.sort(comments, Comparator.comparing(Comment::getDate).reversed());
+        return Response.ok(comments.subList((page-1)*3,Math.min(comments.size(), page*3))).build();
     }
 
     @GET
@@ -43,7 +57,18 @@ public class CommentResource {
     @Path("/news/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response allCommentsForNews(@PathParam("id") Integer vest_id) {
-        return Response.ok(commentService.allCommentsForNews(vest_id)).build();
+        List<Comment> comments = commentService.allCommentsForNews(vest_id);
+        Collections.sort(comments, Comparator.comparing(Comment::getDate).reversed());
+        return Response.ok(comments).build();
+    }
+
+    @GET
+    @Path("/news/{id}/page/{page}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response allCommentsForNewsWithPagination(@PathParam("page") Integer page, @PathParam("id") Integer id) {
+        List<Comment> comments = commentService.allCommentsForNews(id);
+        Collections.sort(comments, Comparator.comparing(Comment::getDate).reversed());
+        return Response.ok(comments.subList((page-1)*3,Math.min(comments.size(), page*3))).build();
     }
 
 }

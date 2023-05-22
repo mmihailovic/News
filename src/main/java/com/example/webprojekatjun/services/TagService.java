@@ -18,11 +18,15 @@ public class TagService {
         return tagRepository.allTags();
     }
 
-    public Tag findTag(String kljucna_rec) {
-        return tagRepository.findTag(kljucna_rec);
+    public Tag findTag(Integer id) {
+        return tagRepository.findTag(id);
     }
 
-    public void deleteTag(String kljucna_rec) {
-        tagRepository.deleteTag(kljucna_rec);
+    public List<Tag> allTagsForNews(Integer vest_id) {
+        return tagRepository.allTagsForNews(vest_id);
+    }
+
+    public void deleteTag(Integer id) {
+        tagRepository.deleteTag(id);
     }
 }

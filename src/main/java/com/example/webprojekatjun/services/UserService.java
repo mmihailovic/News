@@ -6,21 +6,28 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.example.webprojekatjun.entities.User;
 import com.example.webprojekatjun.repositories.UserRepository;
+import com.example.webprojekatjun.resources.UserResource;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.inject.Inject;
+import javax.ws.rs.container.ContainerRequestContext;
+import java.util.List;
 
 public class UserService {
 
     @Inject
     private UserRepository userRepository;
 
+    public List<User> allUsers() {
+        return userRepository.allUsers();
+    }
+
     public String login(String username, String password)
     {
         String hashedPassword = DigestUtils.sha256Hex(password);
 
         User user = this.userRepository.findUser(username);
-        if (user == null || !user.getHashedPassword().equals(hashedPassword)) {
+        if (user == null || !user.getHashedPassword().equals(hashedPassword) || !user.isAktivan()) {
             return null;
         }
 
@@ -56,19 +63,30 @@ public class UserService {
         return true;
     }
 
-    public boolean isAuthorized(String token){
+    public boolean isAuthorized(String token, ContainerRequestContext requestContext){
         Algorithm algorithm = Algorithm.HMAC256("secret");
         JWTVerifier verifier = JWT.require(algorithm)
                 .build();
         DecodedJWT jwt = verifier.verify(token);
 
         String username = jwt.getSubject();
+        String tip = jwt.getClaim("tip").asString();
 //        jwt.getClaim("role").asString();
 
         User user = this.userRepository.findUser(username);
 
         if (user == null){
             return false;
+        }
+
+        if(!user.isAktivan())
+            return false;
+
+        List<Object> matchedResources = requestContext.getUriInfo().getMatchedResources();
+        for (Object matchedResource : matchedResources) {
+            if (matchedResource instanceof UserResource && tip.equals("CONTENT_CREATOR")) {
+                return false;
+            }
         }
 
         return true;

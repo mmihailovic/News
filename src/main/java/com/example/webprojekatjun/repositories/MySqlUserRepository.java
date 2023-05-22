@@ -2,10 +2,9 @@ package com.example.webprojekatjun.repositories;
 
 import com.example.webprojekatjun.entities.User;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MySqlUserRepository extends MySqlAbstractRepository implements UserRepository{
     @Override
@@ -71,6 +70,33 @@ public class MySqlUserRepository extends MySqlAbstractRepository implements User
         }
 
         return user;
+    }
+
+    @Override
+    public List<User> allUsers() {
+        List<User> users = new ArrayList<>();
+
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = this.newConnection();
+
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("select * from korisnik");
+            while (resultSet.next()) {
+                users.add(new User(resultSet.getString("email"), resultSet.getString("sifra"), resultSet.getString("ime"),resultSet.getString("prezime"),resultSet.getString("tip"),resultSet.getBoolean("aktivan")));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            this.closeStatement(statement);
+            this.closeResultSet(resultSet);
+            this.closeConnection(connection);
+        }
+
+        return users;
     }
 
     @Override

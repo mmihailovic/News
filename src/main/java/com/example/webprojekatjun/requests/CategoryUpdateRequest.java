@@ -14,6 +14,9 @@ public class CategoryUpdateRequest {
     @NotEmpty(message = "Polje za opis mora biti popunjeno")
     private String opis;
 
+    public CategoryUpdateRequest() {
+    }
+
     public CategoryUpdateRequest(String ime, String novoIme, String opis) {
         this.ime = ime;
         this.novoIme = novoIme;

@@ -21,6 +21,9 @@ public class UpdateUserRequest {
     @NotEmpty(message = "Polje za tip mora biti popunjeno")
     private String tip;
 
+    public UpdateUserRequest() {
+    }
+
     public UpdateUserRequest(String email, String newEmail, String ime, String prezime, String tip) {
         this.email = email;
         this.newEmail = newEmail;

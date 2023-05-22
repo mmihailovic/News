@@ -11,12 +11,21 @@ public class MySqlTagRepository extends MySqlAbstractRepository implements TagRe
     public Tag addTag(Tag tag) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
         try {
             connection = this.newConnection();
 
-            preparedStatement = connection.prepareStatement("INSERT INTO kategorija (kljucna_rec) VALUES(?)");
+            String[] generatedColumns = {"id"};
+
+            preparedStatement = connection.prepareStatement("INSERT INTO tag (kljucna_rec, vest_id) VALUES(?, ?)", generatedColumns);
             preparedStatement.setString(1, tag.getKljucnaRec());
+            preparedStatement.setInt(2, tag.getVest_id());
             preparedStatement.executeUpdate();
+            resultSet = preparedStatement.getGeneratedKeys();
+
+            if (resultSet.next()) {
+                tag.setId(resultSet.getInt(1));
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -41,7 +50,7 @@ public class MySqlTagRepository extends MySqlAbstractRepository implements TagRe
             statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from tag");
             while (resultSet.next()) {
-                tags.add(new Tag(resultSet.getString("kljucna_rec")));
+                tags.add(new Tag(resultSet.getInt("id"), resultSet.getString("kljucna_rec"),resultSet.getInt("vest_id")));
             }
 
         } catch (Exception e) {
@@ -56,7 +65,7 @@ public class MySqlTagRepository extends MySqlAbstractRepository implements TagRe
     }
 
     @Override
-    public Tag findTag(String kljucna_rec) {
+    public Tag findTag(Integer id) {
         Tag tag = null;
 
         Connection connection = null;
@@ -65,13 +74,15 @@ public class MySqlTagRepository extends MySqlAbstractRepository implements TagRe
         try {
             connection = this.newConnection();
 
-            preparedStatement = connection.prepareStatement("SELECT * FROM tag where kljucna_rec = ?");
-            preparedStatement.setString(1, kljucna_rec);
+            preparedStatement = connection.prepareStatement("SELECT * FROM tag where id = ?");
+            preparedStatement.setInt(1, id);
             resultSet = preparedStatement.executeQuery();
 
             if(resultSet.next()) {
+                Integer tagId = resultSet.getInt("id");
                 String rec = resultSet.getString("kljucna_Rec");
-                tag = new Tag(rec);
+                Integer vest_id = resultSet.getInt("vest_id");
+                tag = new Tag(tagId, rec,vest_id);
             }
 
             resultSet.close();
@@ -89,14 +100,42 @@ public class MySqlTagRepository extends MySqlAbstractRepository implements TagRe
     }
 
     @Override
-    public void deleteTag(String kljucna_rec) {
+    public List<Tag> allTagsForNews(Integer vest_id) {
+        List<Tag> tags = new ArrayList<>();
+
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = this.newConnection();
+
+            statement = connection.prepareStatement("select * from tag where vest_id = ?");
+            statement.setInt(1, vest_id);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                tags.add(new Tag(resultSet.getInt("id"), resultSet.getString("kljucna_rec"),resultSet.getInt("vest_id")));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            this.closeStatement(statement);
+            this.closeResultSet(resultSet);
+            this.closeConnection(connection);
+        }
+
+        return tags;
+    }
+
+    @Override
+    public void deleteTag(Integer id) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
             connection = this.newConnection();
 
-            preparedStatement = connection.prepareStatement("DELETE FROM tag where kljucna_rec = ?");
-            preparedStatement.setString(1, kljucna_rec);
+            preparedStatement = connection.prepareStatement("DELETE FROM tag where id = ?");
+            preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
 
             preparedStatement.close();

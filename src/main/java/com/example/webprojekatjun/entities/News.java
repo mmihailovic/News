@@ -2,6 +2,7 @@ package com.example.webprojekatjun.entities;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 public class News {
     private Integer id;
@@ -14,7 +15,7 @@ public class News {
     private String text;
     @NotNull(message = "Date is required")
     @NotEmpty(message = "Date is required")
-    private long date;
+    private long date = new Date().getTime();
     private int brojPoseta;
 
     @NotNull(message = "Author is required")
@@ -45,6 +46,14 @@ public class News {
         this.text = text;
         this.brojPoseta = brojPoseta;
         this.category = category;
+    }
+
+    public News(String title, String text, String author, String category) {
+        this.title = title;
+        this.text = text;
+        this.author = author;
+        this.category = category;
+        this.brojPoseta = 0;
     }
 
     public Integer getId() {

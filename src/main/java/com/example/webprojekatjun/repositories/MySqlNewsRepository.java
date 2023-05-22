@@ -17,12 +17,13 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
 
             String[] generatedColumns = {"id"};
 
-            preparedStatement = connection.prepareStatement("INSERT INTO vest (naslov, tekst, vreme_kreiranja, broj_poseta, autor) VALUES(?, ?, ?, ?, ?)", generatedColumns);
+            preparedStatement = connection.prepareStatement("INSERT INTO vest (naslov, tekst, vreme_kreiranja, broj_poseta, autor, kategorija_ime) VALUES(?, ?, ?, ?, ?, ?)", generatedColumns);
             preparedStatement.setString(1, news.getTitle());
             preparedStatement.setString(2, news.getText());
             preparedStatement.setLong(3, news.getDate());
             preparedStatement.setInt(4, news.getBrojPoseta());
             preparedStatement.setString(5, news.getAuthor());
+            preparedStatement.setString(6, news.getCategory());
             preparedStatement.executeUpdate();
             resultSet = preparedStatement.getGeneratedKeys();
 
@@ -106,8 +107,8 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
         try {
             connection = this.newConnection();
 
-            statement = connection.prepareStatement("select v.* from vest_tag vt join vest v on(vt.vest_id = v.id) join tag t on(vt.tag = t.kljucna_rec) where vt.tag = ?");
-            statement.setString(1,kljucna_rec);
+            statement = connection.prepareStatement("select v.* from tag t join vest v on(t.vest_id = v.id) where lower(t.kljucna_rec) = ?");
+            statement.setString(1,kljucna_rec.toLowerCase());
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 news.add(new News(resultSet.getInt("id"), resultSet.getString("naslov"), resultSet.getString("tekst"), resultSet.getLong("vreme_kreiranja"),resultSet.getInt("broj_poseta"),resultSet.getString("autor"), resultSet.getString("kategorija_ime")));

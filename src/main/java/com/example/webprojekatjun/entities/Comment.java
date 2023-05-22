@@ -2,6 +2,7 @@ package com.example.webprojekatjun.entities;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 public class Comment {
     private Integer id;
@@ -18,9 +19,9 @@ public class Comment {
     @NotNull(message = "Author is required")
     private String autor;
 
-    @NotEmpty(message = "Author is required")
-    @NotNull(message = "Author is required")
-    private long date;
+    @NotEmpty(message = "Date is required")
+    @NotNull(message = "Date is required")
+    private long date = new Date().getTime();
 
 
 
@@ -40,6 +41,12 @@ public class Comment {
         this.text = text;
         this.autor = autor;
         this.date = date;
+    }
+
+    public Comment(Integer vest_id, String text, String autor) {
+        this.vest_id = vest_id;
+        this.text = text;
+        this.autor = autor;
     }
 
     public Integer getId() {
