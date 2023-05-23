@@ -2,10 +2,9 @@ package com.example.webprojekatjun.entities;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 public class Tag {
-    @NotNull(message = "Polje za id mora biti popunjeno")
-    @NotEmpty(message = "Polje za id mora biti popunjeno")
     private Integer id;
     @NotNull(message = "Polje za kljucnu rec mora biti popunjeno")
     @NotEmpty(message = "Polje za kljucnu rec mora biti popunjeno")
@@ -51,5 +50,18 @@ public class Tag {
 
     public void setVest_id(Integer vest_id) {
         this.vest_id = vest_id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tag tag = (Tag) o;
+        return Objects.equals(kljucnaRec.toLowerCase(), tag.kljucnaRec.toLowerCase()) && Objects.equals(vest_id, tag.vest_id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(kljucnaRec, vest_id);
     }
 }

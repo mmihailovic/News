@@ -1,6 +1,7 @@
 package com.example.webprojekatjun.resources;
 
 import com.example.webprojekatjun.entities.News;
+import com.example.webprojekatjun.requests.NewsUpdateRequest;
 import com.example.webprojekatjun.services.NewsService;
 
 import javax.inject.Inject;
@@ -65,6 +66,13 @@ public class NewsResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response find(@PathParam("id") Integer id) {
         return Response.ok(newsService.findNews(id)).build();
+    }
+
+    @POST
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateNews(@PathParam("id") Integer id, NewsUpdateRequest news) {
+        return Response.ok(newsService.updateNews(id, news)).build();
     }
 
     @GET

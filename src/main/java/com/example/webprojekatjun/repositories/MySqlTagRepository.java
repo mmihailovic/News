@@ -4,7 +4,9 @@ import com.example.webprojekatjun.entities.Tag;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MySqlTagRepository extends MySqlAbstractRepository implements TagRepository{
     @Override
@@ -124,6 +126,63 @@ public class MySqlTagRepository extends MySqlAbstractRepository implements TagRe
             this.closeConnection(connection);
         }
 
+        return tags;
+    }
+
+    @Override
+    public List<Tag> updateTags(Integer vest_id, List<Tag> tags) {
+        List<Tag> currentTags = allTagsForNews(vest_id);
+        Map<Tag,Integer> mapa = new HashMap<>();
+        List<Tag> result = new ArrayList<>();
+        Connection connection = null;
+        try {
+            connection = this.newConnection();
+
+            for(Tag t: tags) {
+                mapa.put(t,1);
+            }
+            for(Tag t: currentTags) {
+                if(mapa.containsKey(t)) {
+                    mapa.replace(t,mapa.get(t) - 1);
+                }
+                else mapa.put(t,-1);
+            }
+
+            for(Map.Entry<Tag,Integer> m: mapa.entrySet()) {
+                if(m.getValue() == 0) {
+                    result.add(m.getKey());
+                    continue;
+                }
+                if(m.getValue() == -1) {
+                    PreparedStatement preparedStatement = null;
+                    preparedStatement = connection.prepareStatement("DELETE FROM tag WHERE id = ?");
+                    preparedStatement.setInt(1, m.getKey().getId());
+                    preparedStatement.executeUpdate();
+                    preparedStatement.close();
+                }
+                else {
+                    PreparedStatement preparedStatement = null;
+                    ResultSet resultSet = null;
+                    String[] generatedColumns = {"id"};
+
+                    preparedStatement = connection.prepareStatement("INSERT INTO tag (kljucna_rec, vest_id) VALUES(?, ?)", generatedColumns);
+                    preparedStatement.setString(1, m.getKey().getKljucnaRec());
+                    preparedStatement.setInt(2, m.getKey().getVest_id());
+                    preparedStatement.executeUpdate();
+                    resultSet = preparedStatement.getGeneratedKeys();
+                    if(resultSet.next()) {
+                        m.getKey().setId(resultSet.getInt(1));
+                    }
+
+                    result.add(m.getKey());
+                    preparedStatement.close();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            this.closeConnection(connection);
+        }
         return tags;
     }
 

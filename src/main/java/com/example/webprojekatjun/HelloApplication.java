@@ -1,5 +1,6 @@
 package com.example.webprojekatjun;
 
+import com.example.webprojekatjun.filters.AuthFilter;
 import com.example.webprojekatjun.repositories.*;
 import com.example.webprojekatjun.services.*;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -33,6 +34,7 @@ public class HelloApplication extends ResourceConfig {
             }
         };
         register(binder);
+        register(AuthFilter.class);
 
         // Ucitavamo resurse
         packages("com.example.webprojekatjun.resources");

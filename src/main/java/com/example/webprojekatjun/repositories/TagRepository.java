@@ -9,5 +9,6 @@ public interface TagRepository {
     List<Tag> allTags();
     Tag findTag(Integer id);
     List<Tag> allTagsForNews(Integer vest_id);
+    List<Tag> updateTags(Integer vest_id, List<Tag> tags);
     void deleteTag(Integer id);
 }

@@ -26,6 +26,10 @@ public class TagService {
         return tagRepository.allTagsForNews(vest_id);
     }
 
+    public List<Tag> updateTags(Integer vest_id, List<Tag> tags) {
+        return tagRepository.updateTags(vest_id, tags);
+    }
+
     public void deleteTag(Integer id) {
         tagRepository.deleteTag(id);
     }

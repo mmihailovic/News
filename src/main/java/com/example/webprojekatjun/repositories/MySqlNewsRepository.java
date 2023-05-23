@@ -1,6 +1,7 @@
 package com.example.webprojekatjun.repositories;
 
 import com.example.webprojekatjun.entities.News;
+import com.example.webprojekatjun.requests.NewsUpdateRequest;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -162,6 +163,31 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
         }
 
         return news;
+    }
+
+    @Override
+    public boolean updateNews(Integer id, NewsUpdateRequest news) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = this.newConnection();
+
+            preparedStatement = connection.prepareStatement("UPDATE vest SET naslov = ?, tekst = ?, kategorija_ime = ? where id = ?");
+            preparedStatement.setString(1, news.getNaslov());
+            preparedStatement.setString(2, news.getTekst());
+            preparedStatement.setString(3, news.getKategorija());
+            preparedStatement.setInt(4, id);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            connection.close();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            this.closeStatement(preparedStatement);
+            this.closeConnection(connection);
+        }
+        return false;
     }
 
     @Override

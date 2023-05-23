@@ -42,6 +42,13 @@ public class TagResource {
         return Response.ok(tagService.addTag(tag)).build();
     }
 
+    @POST
+    @Path("/news/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateTags(@PathParam("id") Integer vest_id, List<Tag> tag) {
+        return Response.ok(tagService.updateTags(vest_id, tag)).build();
+    }
+
     @GET
     @Path("/news/{vest_id}")
     @Produces(MediaType.APPLICATION_JSON)
