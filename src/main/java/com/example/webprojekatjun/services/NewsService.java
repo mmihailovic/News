@@ -19,6 +19,18 @@ public class NewsService {
         return this.newsRepository.allNews();
     }
 
+    public List<News> allNewsWithPagination(Integer page) {
+        return this.newsRepository.allNewsWithPagination(page);
+    }
+
+    public List<News> allNewsForCategoryWithPagination(String ime, Integer page) {
+        return this.newsRepository.allNewsForCategoryWithPagination(ime, page);
+    }
+
+    public Integer allNewsForCategoryWithPaginationNumberOfPages(String ime) {
+        return this.newsRepository.allNewsForCategoryWithPaginationNumberOfPages(ime);
+    }
+
     public List<News> allNewsForCategory(String ime) {
         return this.newsRepository.allNewsForCategory(ime);
     }
@@ -26,8 +38,11 @@ public class NewsService {
     public List<News> allNewsForTag(String kljucna_rec) {
         return this.newsRepository.allNewsForTag(kljucna_rec);
     }
-
+    public List<News> allNewsForTagWithPagination(String kljucna_rec, Integer page) {
+        return this.newsRepository.allNewsForTagWithPagination(kljucna_rec, page);
+    }
     public News findNews(Integer id) {
+        this.newsRepository.increment(id);
         return this.newsRepository.findNews(id);
     }
 

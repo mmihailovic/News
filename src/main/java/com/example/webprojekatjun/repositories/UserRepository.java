@@ -10,6 +10,7 @@ public interface UserRepository {
     User findUser(String username);
 
     List<User> allUsers();
+    List<User> allUsersWithPagination(Integer page);
     boolean updateUser(String username, String newUsername, String ime,String prezime,String tip);
     boolean setStatus(String username,boolean active);
 }

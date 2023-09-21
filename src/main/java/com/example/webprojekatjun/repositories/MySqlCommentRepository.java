@@ -51,7 +51,7 @@ public class MySqlCommentRepository extends MySqlAbstractRepository implements C
             connection = this.newConnection();
 
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("select * from komentar");
+            resultSet = statement.executeQuery("select * from komentar ORDER BY datum_kreiranja DESC");
             while (resultSet.next()) {
                 comments.add(new Comment(resultSet.getInt("id"), resultSet.getInt("vest_id"),resultSet.getString("tekst"), resultSet.getString("autor"), resultSet.getLong("datum_kreiranja")));
             }
@@ -77,7 +77,7 @@ public class MySqlCommentRepository extends MySqlAbstractRepository implements C
         try {
             connection = this.newConnection();
 
-            statement = connection.prepareStatement("select * from komentar where vest_id = ?");
+            statement = connection.prepareStatement("select * from komentar where vest_id = ? ORDER BY datum_kreiranja DESC");
             statement.setInt(1,vest_id);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {

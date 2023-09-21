@@ -100,6 +100,34 @@ public class MySqlUserRepository extends MySqlAbstractRepository implements User
     }
 
     @Override
+    public List<User> allUsersWithPagination(Integer page) {
+        List<User> users = new ArrayList<>();
+
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = this.newConnection();
+
+            statement = connection.prepareStatement("select * from korisnik LIMIT 3 OFFSET ?");
+            statement.setInt(1,(page-1)*3);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                users.add(new User(resultSet.getString("email"), resultSet.getString("sifra"), resultSet.getString("ime"),resultSet.getString("prezime"),resultSet.getString("tip"),resultSet.getBoolean("aktivan")));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            this.closeStatement(statement);
+            this.closeResultSet(resultSet);
+            this.closeConnection(connection);
+        }
+
+        return users;
+    }
+
+    @Override
     public boolean updateUser(String username, String newUsername, String ime, String prezime, String tip) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;

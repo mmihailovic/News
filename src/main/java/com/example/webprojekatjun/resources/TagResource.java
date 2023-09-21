@@ -22,14 +22,6 @@ public class TagResource {
     }
 
     @GET
-    @Path("/page/{page}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response allWithPagination(@PathParam("page") Integer page) {
-        List<Tag> tags = tagService.allTags();
-        return Response.ok(tags.subList((page-1)*3,Math.min(tags.size(), page*3))).build();
-    }
-
-    @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response findTag(@PathParam("id") Integer id) {
@@ -45,6 +37,7 @@ public class TagResource {
     @POST
     @Path("/news/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response updateTags(@PathParam("id") Integer vest_id, List<Tag> tag) {
         return Response.ok(tagService.updateTags(vest_id, tag)).build();
     }
@@ -54,14 +47,6 @@ public class TagResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response allTagsForNews(@PathParam("vest_id") Integer vest_id) {
         return Response.ok(tagService.allTagsForNews(vest_id)).build();
-    }
-
-    @GET
-    @Path("/news/{vest_id}/page/{page}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response allTagsForNewsWithPagination(@PathParam("page") Integer page, @PathParam("vest_id") Integer vest_id) {
-        List<Tag> tags = tagService.allTagsForNews(vest_id);
-        return Response.ok(tags.subList((page-1)*3,Math.min(tags.size(), page*3))).build();
     }
 
     @DELETE

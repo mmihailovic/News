@@ -20,18 +20,14 @@ public class NewsResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response all(){
-        List<News> news = newsService.allNews();
-        Collections.sort(news, Comparator.comparing(News::getDate).reversed());
-        return Response.ok(news).build();
+        return Response.ok(newsService.allNews()).build();
     }
 
     @GET
     @Path("/page/{page}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response allWithPagination(@PathParam("page") Integer page) {
-        List<News> news = newsService.allNews();
-        Collections.sort(news, Comparator.comparing(News::getDate).reversed());
-        return Response.ok(news.subList((page-1)*3,Math.min(news.size(), page*3))).build();
+        return Response.ok(newsService.allNewsWithPagination(page)).build();
     }
 
     @GET
@@ -79,36 +75,35 @@ public class NewsResource {
     @Path("/category/{ime}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response allNewsForCategory(@PathParam("ime") String ime) {
-        List<News> news = newsService.allNewsForCategory(ime);
-        Collections.sort(news, Comparator.comparing(News::getDate).reversed());
-        return Response.ok(news).build();
+        return Response.ok(newsService.allNewsForCategory(ime)).build();
     }
 
     @GET
     @Path("/category/{ime}/page/{page}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response allNewsForCategoryWithPagination(@PathParam("page") Integer page, @PathParam("ime") String ime) {
-        List<News> news = newsService.allNewsForCategory(ime);
-        Collections.sort(news, Comparator.comparing(News::getDate).reversed());
-        return Response.ok(news.subList((page-1)*3,Math.min(news.size(), page*3))).build();
+        return Response.ok(newsService.allNewsForCategoryWithPagination(ime,page)).build();
+    }
+
+    @GET
+    @Path("/category/{ime}/pages")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response allNewsForCategoryWithPaginationNumberOfPages(@PathParam("ime") String ime) {
+        return Response.ok(newsService.allNewsForCategoryWithPaginationNumberOfPages(ime)).build();
     }
 
     @GET
     @Path("/tag/{kljucna_rec}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response allNewsForTag(@PathParam("kljucna_rec") String kljucna_rec) {
-        List<News> news = newsService.allNewsForTag(kljucna_rec);
-        Collections.sort(news, Comparator.comparing(News::getDate).reversed());
-        return Response.ok(news).build();
+        return Response.ok(newsService.allNewsForTag(kljucna_rec)).build();
     }
 
     @GET
     @Path("/tag/{kljucna_rec}/page/{page}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response allNewsForTagWithPagination(@PathParam("page") Integer page, @PathParam("kljucna_rec") String kljucna_rec) {
-        List<News> news = newsService.allNewsForTag(kljucna_rec);
-        Collections.sort(news, Comparator.comparing(News::getDate).reversed());
-        return Response.ok(news.subList((page-1)*3,Math.min(news.size(), page*3))).build();
+        return Response.ok(newsService.allNewsForTagWithPagination(kljucna_rec,page)).build();
     }
 
     @DELETE

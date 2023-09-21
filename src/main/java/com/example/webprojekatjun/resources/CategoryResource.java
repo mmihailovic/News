@@ -9,7 +9,6 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 @Path("/category")
 public class CategoryResource {
@@ -26,8 +25,7 @@ public class CategoryResource {
     @Path("/page/{page}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response allWithPagination(@PathParam("page") Integer page) {
-        List<Category> categories = categoryService.allCategories();
-        return Response.ok(categories.subList((page-1)*3,Math.min(categories.size(), page*3))).build();
+        return Response.ok(categoryService.allCategoriesWithPagination(page)).build();
     }
 
     @GET

@@ -57,6 +57,34 @@ public class MySqlCategoryRepository extends MySqlAbstractRepository implements 
     }
 
     @Override
+    public List<Category> allCategoriesWithPagination(Integer page) {
+        List<Category> categories = new ArrayList<>();
+
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = this.newConnection();
+
+            statement = connection.prepareStatement("select * from kategorija LIMIT 3 OFFSET ?");
+            statement.setInt(1,(page-1)*3);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                categories.add(new Category(resultSet.getString("ime"),resultSet.getString("opis")));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            this.closeStatement(statement);
+            this.closeResultSet(resultSet);
+            this.closeConnection(connection);
+        }
+
+        return categories;
+    }
+
+    @Override
     public Category findCategory(String ime) {
         Category category = null;
 

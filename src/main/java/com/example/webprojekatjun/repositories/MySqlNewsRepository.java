@@ -54,7 +54,7 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
             connection = this.newConnection();
 
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("select * from vest");
+            resultSet = statement.executeQuery("select * from vest ORDER BY vreme_kreiranja DESC");
             while (resultSet.next()) {
                 posts.add(new News(resultSet.getInt("id"), resultSet.getString("naslov"), resultSet.getString("tekst"),resultSet.getLong("vreme_kreiranja"),resultSet.getInt("broj_poseta"),resultSet.getString("autor"),resultSet.getString("kategorija_ime")));
             }
@@ -71,6 +71,34 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
     }
 
     @Override
+    public List<News> allNewsWithPagination(Integer page) {
+        List<News> news = new ArrayList<>();
+
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = this.newConnection();
+
+            statement = connection.prepareStatement("select * from vest ORDER BY vreme_kreiranja DESC LIMIT 3 OFFSET ?");
+            statement.setInt(1,(page-1)*3);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                news.add(new News(resultSet.getInt("id"), resultSet.getString("naslov"), resultSet.getString("tekst"), resultSet.getLong("vreme_kreiranja"),resultSet.getInt("broj_poseta"),resultSet.getString("autor"), resultSet.getString("kategorija_ime")));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            this.closeStatement(statement);
+            this.closeResultSet(resultSet);
+            this.closeConnection(connection);
+        }
+
+        return news;
+    }
+
+    @Override
     public List<News> allNewsForCategory(String ime) {
         List<News> news = new ArrayList<>();
 
@@ -80,7 +108,7 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
         try {
             connection = this.newConnection();
 
-            statement = connection.prepareStatement("select * from vest where kategorija_ime = ?");
+            statement = connection.prepareStatement("select * from vest where kategorija_ime = ? ORDER BY vreme_kreiranja DESC");
             statement.setString(1,ime);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -99,6 +127,63 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
     }
 
     @Override
+    public List<News> allNewsForCategoryWithPagination(String ime, Integer page) {
+        List<News> news = new ArrayList<>();
+
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = this.newConnection();
+
+            statement = connection.prepareStatement("select * from news.vest where kategorija_ime = ? ORDER BY vreme_kreiranja DESC LIMIT 3 OFFSET ?");
+            statement.setString(1,ime);
+            statement.setInt(2,(page-1)*3);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                news.add(new News(resultSet.getInt("id"), resultSet.getString("naslov"), resultSet.getString("tekst"), resultSet.getLong("vreme_kreiranja"),resultSet.getInt("broj_poseta"),resultSet.getString("autor"), resultSet.getString("kategorija_ime")));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            this.closeStatement(statement);
+            this.closeResultSet(resultSet);
+            this.closeConnection(connection);
+        }
+
+        return news;
+    }
+
+    @Override
+    public Integer allNewsForCategoryWithPaginationNumberOfPages(String ime) {
+        Integer number = 0;
+
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = this.newConnection();
+
+            statement = connection.prepareStatement("select count(*) AS broj from vest where kategorija_ime = ?");
+            statement.setString(1,ime);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                number = resultSet.getInt("broj");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            this.closeStatement(statement);
+            this.closeResultSet(resultSet);
+            this.closeConnection(connection);
+        }
+
+        return number;
+    }
+
+    @Override
     public List<News> allNewsForTag(String kljucna_rec) {
         List<News> news = new ArrayList<>();
 
@@ -108,8 +193,37 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
         try {
             connection = this.newConnection();
 
-            statement = connection.prepareStatement("select v.* from tag t join vest v on(t.vest_id = v.id) where lower(t.kljucna_rec) = ?");
+            statement = connection.prepareStatement("select v.* from tag t join vest v on(t.vest_id = v.id) where lower(t.kljucna_rec) = ? ORDER BY vreme_kreiranja DESC");
             statement.setString(1,kljucna_rec.toLowerCase());
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                news.add(new News(resultSet.getInt("id"), resultSet.getString("naslov"), resultSet.getString("tekst"), resultSet.getLong("vreme_kreiranja"),resultSet.getInt("broj_poseta"),resultSet.getString("autor"), resultSet.getString("kategorija_ime")));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            this.closeStatement(statement);
+            this.closeResultSet(resultSet);
+            this.closeConnection(connection);
+        }
+
+        return news;
+    }
+
+    @Override
+    public List<News> allNewsForTagWithPagination(String kljucna_rec, Integer page) {
+        List<News> news = new ArrayList<>();
+
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = this.newConnection();
+
+            statement = connection.prepareStatement("select v.* from tag t join vest v on(t.vest_id = v.id) where lower(t.kljucna_rec) = ? ORDER BY vreme_kreiranja DESC LIMIT 3 OFFSET ? ");
+            statement.setString(1,kljucna_rec.toLowerCase());
+            statement.setInt(2,(page-1)*3);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 news.add(new News(resultSet.getInt("id"), resultSet.getString("naslov"), resultSet.getString("tekst"), resultSet.getLong("vreme_kreiranja"),resultSet.getInt("broj_poseta"),resultSet.getString("autor"), resultSet.getString("kategorija_ime")));
@@ -188,6 +302,26 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
             this.closeConnection(connection);
         }
         return false;
+    }
+
+    @Override
+    public void increment(Integer id) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = this.newConnection();
+
+            preparedStatement = connection.prepareStatement("UPDATE vest SET broj_poseta = broj_poseta + 1 where id = ?");
+            preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            this.closeStatement(preparedStatement);
+            this.closeConnection(connection);
+        }
     }
 
     @Override

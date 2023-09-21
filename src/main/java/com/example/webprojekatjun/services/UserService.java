@@ -22,6 +22,10 @@ public class UserService {
         return userRepository.allUsers();
     }
 
+    public List<User> allUsersWithPagination(Integer page) {
+        return userRepository.allUsersWithPagination(page);
+    }
+
     public String login(String username, String password)
     {
         String hashedPassword = DigestUtils.sha256Hex(password);
@@ -56,7 +60,7 @@ public class UserService {
     }
     public boolean setStatus(String username, boolean aktivan) {
         User u = this.userRepository.findUser(username);
-        if (u == null) {
+        if (u == null || u.getTip().equals("ADMIN")) {
             return false;
         }
         userRepository.setStatus(username,aktivan);
@@ -71,7 +75,6 @@ public class UserService {
 
         String username = jwt.getSubject();
         String tip = jwt.getClaim("tip").asString();
-//        jwt.getClaim("role").asString();
 
         User user = this.userRepository.findUser(username);
 

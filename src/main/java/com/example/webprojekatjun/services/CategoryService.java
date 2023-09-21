@@ -21,6 +21,9 @@ public class CategoryService {
         return categoryRepository.allCategories();
     }
 
+    public List<Category> allCategoriesWithPagination(Integer page) {
+        return this.categoryRepository.allCategoriesWithPagination(page);
+    }
     public Category findCategory(String ime) {
         return categoryRepository.findCategory(ime);
     }

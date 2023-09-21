@@ -13,7 +13,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Path("/users")
@@ -31,9 +30,8 @@ public class UserResource {
     @GET
     @Path("/page/{page}")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response allUsers(@PathParam("page") Integer page) {
-        List<User> users = userService.allUsers();
-        return Response.ok(users.subList((page-1)*3,Math.min(users.size(), page*3))).build();
+    public Response allUsersWithPagination(@PathParam("page") Integer page) {
+        return Response.ok(userService.allUsersWithPagination(page)).build();
     }
 
     @POST

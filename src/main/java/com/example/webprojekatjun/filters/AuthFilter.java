@@ -16,6 +16,14 @@ public class AuthFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
+        if (requestContext.getMethod().equals("OPTIONS")) {
+            requestContext.getHeaders().add("Access-Control-Allow-Origin", "*");
+            requestContext.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+            requestContext.getHeaders().add("Access-Control-Allow-Headers", "Content-Type, Authorization");
+            requestContext.abortWith(Response.status(Response.Status.OK).build());
+            return;
+        }
+        requestContext.getHeaders().add("Access-Control-Allow-Origin", "*");
         if (!this.isAuthRequired(requestContext)) {
             return;
         }
@@ -41,10 +49,9 @@ public class AuthFilter implements ContainerRequestFilter {
 
         String path = req.getUriInfo().getPath();
         String method = req.getMethod();
-        System.out.println(path);
-        System.out.println(method);
         if(path.contains("/comments/news") || (path.endsWith("comments")  && method.equals("POST")) ||
-                (path.contains("news/") && method.equals("GET")) || (path.contains("tag/news") && method.equals("GET")))
+                (path.contains("news/") && method.equals("GET")) || (path.contains("news/") && method.equals("PUT")) ||(path.contains("tag/news") && method.equals("GET"))
+            || (path.endsWith("category")  && method.equals("GET")))
             return false;
 
         return true;
